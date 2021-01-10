@@ -1,8 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib.auth.context_processors import auth
-from django.template import RequestContext
 
 
 def index(request):
-    return render(request, 'index.html', {})
+    template_name = 'splash' if not request.user.is_authenticated else 'welcome'
+    return render(request, f'{template_name}.html', {})
