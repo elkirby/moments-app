@@ -7,6 +7,10 @@ This project relies on the virtual environment and package management library,
 ## Setup
     pipenv shell
     pipenv sync --dev
+
+## Testing
+
+    python manage.py test
     
 
 ## Troubleshooting

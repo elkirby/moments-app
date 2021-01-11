@@ -11,13 +11,29 @@
 </head>
 <body>
 <style type="text/css">
-    body { background-color: #ECE7D6; }
+    body {
+        background-color: #ECE7D6;
+    }
+
     h1 h2 {
         color: #3b434a;
     }
+
+    .form-group label {
+        font-size: small;
+        margin-right: 1em;
+    }
+
+    .form-group input {
+        padding: 0.1em 0.5em;
+        font-size: small;
+    }
 </style>
 <nav class="navbar navbar-light" style="background-color: #7C9A94;">
-    <a class="navbar-brand" href="{% url 'Home' %}"><i class="fas fa-camera-retro" style="margin: 0 .25em"></i>Moments</a>
+    <a class="navbar-brand" href="{% url 'Home' %}">
+        <i class="fas fa-camera-retro" style="margin: 0 .25em"></i>
+        Moments
+    </a>
     <span class="navbar-text">
         {% if user.is_authenticated %}
             Hello, {{ user }}

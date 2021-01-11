@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="d-flex form-group">
+        <form class="w-25 m-sm-3" action="{% url 'Login' %}" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="d-flex justify-content-between align-items-center">
+                <input class="d-flex btn btn-info flex-column" type="submit" value="Submit">
+                <small class="d-flex form-text flex-column">
+                    No account?&nbsp;<a href="{% url 'Sign Up' %}">Sign up now!</a>
+                </small>
+            </div>
+        </form>
+    </div>
+{% endblock %}
