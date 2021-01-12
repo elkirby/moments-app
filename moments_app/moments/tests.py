@@ -15,6 +15,7 @@ class AuthUserTestCase(TestCase):
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
         cls.sign_up_page = reverse('Sign Up')
+        cls.login_page = reverse('Login')
 
     def tearDown(self) -> None:
         self.client.logout()
@@ -105,3 +106,47 @@ class AuthUserTestCase(TestCase):
 
         expected_redirect = self.home_page
         self.assertEqual(expected_redirect, response['Location'])
+
+    def test_login_get_anonymous(self):
+        with self.assertTemplateUsed('login.html'):
+            self.client.get(self.login_page, follow=True)
+            self.assertTemplateNotUsed('welcome.html')
+
+    def test_login_get_logged_in(self):
+        self.client.force_login(self.user)
+        with self.assertTemplateUsed('welcome.html'):
+            self.client.get(self.login_page, follow=True)
+            self.assertTemplateNotUsed('login.html')
+
+    def test_login_post_anonymous(self):
+        response = self.client.post(self.login_page, data=dict(username=self.username, password=self.password))
+
+        # Assert expected redirect
+        expected_response_status = 302
+        self.assertEqual(expected_response_status, response.status_code)
+        expected_redirect = self.home_page
+        self.assertEqual(expected_redirect, response['Location'])
+
+        self.assertTrue(self.user.is_authenticated)
+
+    def test_login_post_anonymous_validation(self):
+        request_data = {
+            "username": self.username,
+            "password": f"bad_{self.password}"
+        }
+        response = self.client.post(self.login_page, data=request_data, follow=True)
+
+        expected_error = "Please enter a correct username and password. Note that both fields may be case-sensitive."
+
+        # Assert no redirect
+        expected_response_status = 200
+        self.assertEqual(expected_response_status, response.status_code)
+
+        # Assert form validation error
+        self.assertFormError(response, 'login_form', None, expected_error)
+
+    def test_login_post_logged_in(self):
+        self.client.force_login(self.user)
+        with self.assertTemplateUsed('welcome.html'):
+            self.client.post(self.login_page, data=dict(username=self.username, password=self.password), follow=True)
+            self.assertTemplateNotUsed('login.html')
