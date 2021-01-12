@@ -1,5 +1,5 @@
 """
-WSGI config for moments_app project.
+WSGI config for moments project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'moments_app.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'moments.settings')
 
 application = get_wsgi_application()

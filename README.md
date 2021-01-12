@@ -14,7 +14,7 @@ This project relies on the virtual environment and package management library,
     
 
 ## Troubleshooting
-### Problem: Can't install `psycopg2` during pipenv sync on Mac OS X
+### Problem: Can't install `psycopg2` during `pipenv sync` on Mac OS X
 1. Make sure XCode is installed
         
         xcode-select --install

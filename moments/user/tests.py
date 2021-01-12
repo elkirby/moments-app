@@ -3,7 +3,29 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 
-class AuthUserTestCase(TestCase):
+class HomeTestCase(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.username = "test_user"
+        cls.password = "test_password"
+        cls.user = User.objects.create_user(username=cls.username, password=cls.password)
+        cls.home_page = reverse('Home')
+
+    def test_home_anonymous(self):
+        with self.assertTemplateUsed('splash.html'):
+            self.client.get(self.home_page)
+
+    def test_home_logged_in(self):
+        self.client.force_login(self.user)
+        with self.assertTemplateUsed('welcome.html'):
+            self.client.get(self.home_page)
+
+
+class UserSignUpTestCase(TestCase):
     def setUp(self) -> None:
         self.client = Client()
 
@@ -15,19 +37,6 @@ class AuthUserTestCase(TestCase):
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
         cls.sign_up_page = reverse('Sign Up')
-        cls.login_page = reverse('Login')
-
-    def tearDown(self) -> None:
-        self.client.logout()
-
-    def test_home_anonymous(self):
-        with self.assertTemplateUsed('splash.html'):
-            self.client.get(self.home_page)
-
-    def test_home_logged_in(self):
-        self.client.force_login(self.user)
-        with self.assertTemplateUsed('welcome.html'):
-            self.client.get(self.home_page)
 
     def test_sign_up_get_anonymous(self):
         with self.assertTemplateUsed('sign-up.html'):
@@ -52,7 +61,6 @@ class AuthUserTestCase(TestCase):
         with self.assertRaises(User.DoesNotExist):
             User.objects.get(username=username)
 
-        # Run POST command
         response = self.client.post(self.sign_up_page, data=request_data)
 
         # Assert successful redirect to home page
@@ -77,7 +85,6 @@ class AuthUserTestCase(TestCase):
         # Assert user exists
         User.objects.get(username=self.username)
 
-        # Run POST command
         response = self.client.post(self.sign_up_page, data=request_data)
 
         # Assert no redirect
@@ -97,7 +104,6 @@ class AuthUserTestCase(TestCase):
             "password2": password
         }
 
-        # Run POST command
         response = self.client.post(self.sign_up_page, data=request_data)
 
         # Assert successful redirect to home page
@@ -106,6 +112,20 @@ class AuthUserTestCase(TestCase):
 
         expected_redirect = self.home_page
         self.assertEqual(expected_redirect, response['Location'])
+
+
+class UserLoginTestCase(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.username = "test_user"
+        cls.password = "test_password"
+        cls.user = User.objects.create_user(username=cls.username, password=cls.password)
+        cls.home_page = reverse('Home')
+        cls.login_page = reverse('Login')
 
     def test_login_get_anonymous(self):
         with self.assertTemplateUsed('login.html'):
