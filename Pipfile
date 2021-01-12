@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 django = "*"
 django-admin = "*"
+psycopg2 = "*"
+django-crispy-forms = "*"
 
 [dev-packages]
 

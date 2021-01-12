@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="jumbotron" style="background: none">
+        <div class="container text-center">
+            <h1 class="display-1">Moments</h1>
+            <p class="lead font-italic">Your Life in Photos</p>
+            <div>
+                <a class="btn btn-info" href="{% url 'Login' %}">Login</a>
+                <a class="btn btn-info" href="{% url 'Sign Up' %}">Sign Up</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

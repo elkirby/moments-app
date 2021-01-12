@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>
+    {% if user.is_authenticated %}
+        Hello, {{ user }}
+    {% else %}
+        You need to login to view this page !
+    {% endif %}
+</h1>
+{% endblock %}
