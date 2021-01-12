@@ -149,6 +149,20 @@ class UserLoginTestCase(TestCase):
 
         self.assertTrue(self.user.is_authenticated)
 
+    def test_login_post_anonymous_redirect(self):
+        redirect_path = '/foo'
+        response = self.client.post(f"{self.login_page}?next={redirect_path}",
+                                    data=dict(username=self.username,
+                                              password=self.password))
+
+        # Assert expected redirect
+        expected_response_status = 302
+        self.assertEqual(expected_response_status, response.status_code)
+        expected_redirect = redirect_path
+        self.assertEqual(expected_redirect, response['Location'])
+
+        self.assertTrue(self.user.is_authenticated)
+
     def test_login_post_anonymous_validation(self):
         request_data = {
             "username": self.username,
@@ -164,6 +178,7 @@ class UserLoginTestCase(TestCase):
 
         # Assert form validation error
         self.assertFormError(response, 'login_form', None, expected_error)
+
 
     def test_login_post_logged_in(self):
         self.client.force_login(self.user)
