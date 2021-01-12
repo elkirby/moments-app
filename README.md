@@ -25,4 +25,4 @@ This project relies on the virtual environment and package management library,
 
 3. Manually link openssl and pip and re-run
 
-    env LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib" pipenv sync --dev
+       env LDFLAGS="-I/usr/local/opt/openssl/include -L/usr/local/opt/openssl/lib" pipenv sync --dev
