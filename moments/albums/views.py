@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView
 
-# Create your views here.
+from .models import Album
+
+
+class CreateAlbum(LoginRequiredMixin, CreateView):
+    model = Album
+    fields = ['name', 'public']
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)

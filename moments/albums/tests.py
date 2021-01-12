@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.utils import DataError
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.urls import reverse
 
 from .models import Album
 
@@ -50,3 +51,43 @@ class AlbumModelTestCase(TestCase):
         expected_owners = [self.user.username, user_2.username]
         actual_owners = [album.owner.username for album in Album.objects.filter(name=self.album_name)]
         self.assertListEqual(expected_owners, actual_owners)
+
+
+class CreateAlbumViewTestCase(TestCase):
+
+    def setUp(self) -> None:
+        self.client = Client()
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username="test_user")
+        cls.album_name = "test_album"
+        cls.album_template = "albums/album_form.html"
+
+        cls.create_album_page = reverse('Create New Album')
+        cls.login_page = reverse('Login')
+
+    def test_create_album_login_required(self):
+        with self.assertTemplateNotUsed(self.album_template):
+            response = self.client.get(self.create_album_page)
+
+            self.assertEqual(302, response.status_code)
+
+            expected_response_url = f"{self.login_page}?next={self.create_album_page}"
+            self.assertEqual(expected_response_url, response['Location'])
+
+    def test_create_album_logged_in(self):
+        self.client.force_login(self.user)
+        with self.assertTemplateUsed(self.album_template):
+            response = self.client.get(self.create_album_page)
+
+            self.assertEqual(200, response.status_code)
+
+    def test_create_album_post(self):
+        self.client.force_login(self.user)
+        request_data = dict(name=self.album_name, public=True)
+        self.client.post(self.create_album_page, data=request_data)
+
+        test_album = Album.objects.get(name=self.album_name)
+        self.assertIsNotNone(test_album)
