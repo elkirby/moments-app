@@ -10,7 +10,8 @@ from .models import Album
 class AlbumModelTestCase(TestCase):
 
     @classmethod
-    def setUpTestData(cls):
+    def setUpClass(cls):
+        super().setUpClass()
         cls.user = User.objects.create_user("test_user")
         cls.album_name = "test_album"
 
@@ -55,18 +56,19 @@ class AlbumModelTestCase(TestCase):
 
 class CreateAlbumViewTestCase(TestCase):
 
-    def setUp(self) -> None:
-        self.client = Client()
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.client = Client()
         cls.user = User.objects.create_user(username="test_user")
         cls.album_name = "test_album"
         cls.album_template = "albums/album_form.html"
 
         cls.create_album_page = reverse('Create New Album')
         cls.login_page = reverse('Login')
+
+    def tearDown(self) -> None:
+        self.client.logout()
 
     def test_create_album_login_required(self):
         with self.assertTemplateNotUsed(self.album_template):
@@ -87,7 +89,36 @@ class CreateAlbumViewTestCase(TestCase):
     def test_create_album_post(self):
         self.client.force_login(self.user)
         request_data = dict(name=self.album_name, public=True)
-        self.client.post(self.create_album_page, data=request_data)
+
+        response = self.client.post(self.create_album_page, data=request_data)
+
+        expected_response_url = f"/albums/{self.album_name}"
+        self.assertEqual(expected_response_url, response['Location'])
 
         test_album = Album.objects.get(name=self.album_name)
         self.assertIsNotNone(test_album)
+
+
+class AlbumDetailTestCase(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+        cls.user = User.objects.create_user("test_user")
+        cls.album_name = "test_album"
+        cls.album_page = reverse('View Album', args=[cls.album_name])
+        cls.album_template = "albums/album_detail.html"
+
+    def tearDown(self) -> None:
+        self.client.logout()
+
+    def test_get_album(self):
+        Album.objects.create(owner=self.user, name=self.album_name)
+        with self.assertTemplateUsed(self.album_template):
+            self.client.get(self.album_page)
+
+    def test_get_album_does_not_exist(self):
+        with self.assertTemplateNotUsed(self.album_template):
+            response = self.client.get(self.album_page)
+            self.assertEqual(404, response.status_code)
