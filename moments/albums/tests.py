@@ -122,3 +122,21 @@ class AlbumDetailTestCase(TestCase):
         with self.assertTemplateNotUsed(self.album_template):
             response = self.client.get(self.album_page)
             self.assertEqual(404, response.status_code)
+
+    def test_get_own_private_album(self):
+        self.client.force_login(self.user)
+        Album.objects.create(owner=self.user, name=self.album_name, public=False)
+        response = self.client.get(self.album_page)
+        self.assertEqual(200, response.status_code)
+
+    def test_get_private_album_anonymous(self):
+        Album.objects.create(owner=self.user, name=self.album_name, public=False)
+        response = self.client.get(self.album_page)
+        self.assertEqual(401, response.status_code)
+
+    def test_get_other_user_private_album(self):
+        other_user = User.objects.create_user(username="other_user")
+        self.client.force_login(other_user)
+        Album.objects.create(owner=self.user, name=self.album_name, public=False)
+        response = self.client.get(self.album_page)
+        self.assertEqual(401, response.status_code)
