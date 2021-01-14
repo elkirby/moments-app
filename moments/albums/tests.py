@@ -140,3 +140,41 @@ class AlbumDetailTestCase(TestCase):
         Album.objects.create(owner=self.user, name=self.album_name, public=False)
         response = self.client.get(self.album_page)
         self.assertEqual(401, response.status_code)
+
+
+class AlbumListTestCase(TestCase):
+
+    def populate_albums(self):
+        is_public_idx = [True, False, False, True]
+
+        for i in range(4):
+            username = f"user_{i % 2}"
+            is_public = is_public_idx[i]
+            album = Album.objects.create(owner=getattr(self, username),
+                                         name=f"test_album_{i}",
+                                         public=is_public)
+            if is_public:
+                #
+                self.expected_albums.insert(0, repr(album))
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.client = Client()
+        cls.user_0 = User.objects.create_user("user_0")
+        cls.user_1 = User.objects.create_user("user_1")
+        cls.album_page = reverse('Public Albums')
+        cls.album_template = "albums/album_list.html"
+
+    def setUp(self) -> None:
+        self.expected_albums = []
+        self.populate_albums()
+
+    def test_get_all_public_albums(self):
+        response = self.client.get(self.album_page)
+        self.assertQuerysetEqual(values=self.expected_albums, qs=response.context['album_list'])
+
+    def test_get_only_public_albums_logged_in(self):
+        self.client.force_login(self.user_0)
+        response = self.client.get(self.album_page)
+        self.assertQuerysetEqual(values=self.expected_albums, qs=response.context['album_list'])

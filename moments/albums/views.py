@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic import DetailView, edit
+from django.views.generic import DetailView, edit, ListView
 
 from .models import Album
 
@@ -27,3 +27,9 @@ class AlbumDetailView(DetailView):
             return render(request, 'base.html', status=401, context={"error_msg": '401: Unauthorized'})
 
         return super(AlbumDetailView, self).get(self, request, *args, **kwargs)
+
+
+class AlbumPublicListView(ListView):
+    queryset = Album.objects.filter(public=True).all()
+    ordering = '-created'
+    allow_empty = True
