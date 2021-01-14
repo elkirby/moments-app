@@ -5,11 +5,6 @@ from django.shortcuts import render
 from django.urls import reverse
 
 
-def index(request):
-    template_name = 'splash' if not request.user.is_authenticated else 'welcome'
-    return render(request, f'{template_name}.html', {})
-
-
 def sign_up(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('Home'))
@@ -26,7 +21,7 @@ def sign_up(request):
                 return HttpResponseRedirect(reverse('Home'))
     else:
         form = forms.UserCreationForm()
-    return render(request, 'sign-up.html', {'signup_form': form})
+    return render(request, 'auth/sign-up.html', {'signup_form': form})
 
 
 def user_login(request):
@@ -53,4 +48,4 @@ def user_login(request):
     if next_page:
         context['next'] = next_page
 
-    return render(request, 'login.html', context=context)
+    return render(request, 'auth/login.html', context=context)
