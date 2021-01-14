@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>
     {% if user.is_authenticated %}
-        Hello, {{ user }}
+        {% include 'welcome.html' %}
     {% else %}
-        You need to login to view this page !
+        {% include 'splash.html' %}
     {% endif %}
-</h1>
 {% endblock %}

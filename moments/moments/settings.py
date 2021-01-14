@@ -25,6 +25,7 @@ SECRET_KEY = 'f_=)e75n$o5)7x!a%n8&l1%1@+nt85v#b0j37-nx(78k(84dg9'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+LOGIN_URL = 'Login'
 
 # Application definition
 
@@ -35,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'crispy_forms'
+    'crispy_forms',
+    'albums.apps.AlbumsConfig',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -63,7 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'user.context_processors.get_login_form',
+                'auth.context_processors.get_login_form',
             ],
         },
     },

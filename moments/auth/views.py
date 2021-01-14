@@ -5,11 +5,6 @@ from django.shortcuts import render
 from django.urls import reverse
 
 
-def index(request):
-    template_name = 'splash' if not request.user.is_authenticated else 'welcome'
-    return render(request, f'{template_name}.html', {})
-
-
 def sign_up(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('Home'))
@@ -26,13 +21,17 @@ def sign_up(request):
                 return HttpResponseRedirect(reverse('Home'))
     else:
         form = forms.UserCreationForm()
-    return render(request, 'sign-up.html', {'signup_form': form})
+    return render(request, 'auth/sign-up.html', {'signup_form': form})
 
 
 def user_login(request):
     form = AuthenticationForm(request=request)
+
+    redirect = reverse('Home')
+    next_page = request.GET.get('next')
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('Home'))
+        return HttpResponseRedirect(redirect)
+
     elif request.method == 'POST':
         form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
@@ -41,6 +40,12 @@ def user_login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(reverse('Home'))
+                if next_page is not None:
+                    redirect = next_page
+                return HttpResponseRedirect(redirect)
 
-    return render(request, 'login.html', {'login_form': form})
+    context = dict(login_form=form)
+    if next_page:
+        context['next'] = next_page
+
+    return render(request, 'auth/login.html', context=context)

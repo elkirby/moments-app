@@ -5,8 +5,19 @@ This project relies on the virtual environment and package management library,
 [Pipenv](https://pipenv.pypa.io/en/latest/). 
 
 ## Setup
+### Virtual Environment - Pipenv
     pipenv shell
     pipenv sync --dev
+
+### Database
+Create a PostgreSQL database called `moments`
+
+    psql -c "CREATE DATABASE moments"
+
+Run database migrations
+
+    cd moments_app
+    python manage.py migrate
 
 ## Testing
 

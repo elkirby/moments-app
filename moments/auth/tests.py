@@ -4,16 +4,17 @@ from django.urls import reverse
 
 
 class HomeTestCase(TestCase):
-    def setUp(self) -> None:
-        self.client = Client()
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.client = Client()
         cls.username = "test_user"
         cls.password = "test_password"
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
+
+    def tearDown(self) -> None:
+        self.client.logout()
 
     def test_home_anonymous(self):
         with self.assertTemplateUsed('splash.html'):
@@ -26,28 +27,32 @@ class HomeTestCase(TestCase):
 
 
 class UserSignUpTestCase(TestCase):
-    def setUp(self) -> None:
-        self.client = Client()
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.client = Client()
         cls.username = "test_user"
         cls.password = "test_password"
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
+        cls.user_home_template = 'welcome.html'
         cls.sign_up_page = reverse('Sign Up')
+        cls.sign_up_template = 'auth/sign-up.html'
+
+    def tearDown(self) -> None:
+        self.client.logout()
 
     def test_sign_up_get_anonymous(self):
-        with self.assertTemplateUsed('sign-up.html'):
+        with self.assertTemplateUsed(self.sign_up_template):
             self.client.get(self.sign_up_page, follow=True)
-            self.assertTemplateNotUsed('welcome.html')
+            self.assertTemplateNotUsed(self.user_home_template)
 
     def test_sign_up_get_logged_in(self):
         self.client.force_login(self.user)
-        with self.assertTemplateUsed('welcome.html'):
+        with self.assertTemplateUsed(self.user_home_template):
             self.client.get(self.sign_up_page, follow=True)
-            self.assertTemplateNotUsed('sign-up.html')
+            self.assertTemplateNotUsed(self.sign_up_template)
 
     def test_sign_up_post_anonymous(self):
         username = 'user123'
@@ -115,28 +120,32 @@ class UserSignUpTestCase(TestCase):
 
 
 class UserLoginTestCase(TestCase):
-    def setUp(self) -> None:
-        self.client = Client()
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.client = Client()
         cls.username = "test_user"
         cls.password = "test_password"
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
+        cls.user_home_template = 'welcome.html'
         cls.login_page = reverse('Login')
+        cls.login_template = 'auth/login.html'
+
+    def tearDown(self) -> None:
+        self.client.logout()
 
     def test_login_get_anonymous(self):
-        with self.assertTemplateUsed('login.html'):
+        with self.assertTemplateUsed(self.login_template):
             self.client.get(self.login_page, follow=True)
-            self.assertTemplateNotUsed('welcome.html')
+            self.assertTemplateNotUsed(self.user_home_template)
 
     def test_login_get_logged_in(self):
         self.client.force_login(self.user)
-        with self.assertTemplateUsed('welcome.html'):
+        with self.assertTemplateUsed(self.user_home_template):
             self.client.get(self.login_page, follow=True)
-            self.assertTemplateNotUsed('login.html')
+            self.assertTemplateNotUsed(self.login_template)
 
     def test_login_post_anonymous(self):
         response = self.client.post(self.login_page, data=dict(username=self.username, password=self.password))
@@ -145,6 +154,20 @@ class UserLoginTestCase(TestCase):
         expected_response_status = 302
         self.assertEqual(expected_response_status, response.status_code)
         expected_redirect = self.home_page
+        self.assertEqual(expected_redirect, response['Location'])
+
+        self.assertTrue(self.user.is_authenticated)
+
+    def test_login_post_anonymous_redirect(self):
+        redirect_path = '/foo'
+        response = self.client.post(f"{self.login_page}?next={redirect_path}",
+                                    data=dict(username=self.username,
+                                              password=self.password))
+
+        # Assert expected redirect
+        expected_response_status = 302
+        self.assertEqual(expected_response_status, response.status_code)
+        expected_redirect = redirect_path
         self.assertEqual(expected_redirect, response['Location'])
 
         self.assertTrue(self.user.is_authenticated)
@@ -167,6 +190,6 @@ class UserLoginTestCase(TestCase):
 
     def test_login_post_logged_in(self):
         self.client.force_login(self.user)
-        with self.assertTemplateUsed('welcome.html'):
+        with self.assertTemplateUsed(self.user_home_template):
             self.client.post(self.login_page, data=dict(username=self.username, password=self.password), follow=True)
-            self.assertTemplateNotUsed('login.html')
+            self.assertTemplateNotUsed(self.login_template)
