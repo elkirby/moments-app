@@ -11,7 +11,13 @@
                         <div class="overlay">
                             {% with album.photo_set.all|first as photo %}
                                 <img class="card-img-top"
-                                     {% if photo %}style="background-image: url('{{ photo.image.url }}');"{% endif %}>
+                                     style="{% if photo %}
+                                        background-image: url('{{ photo.image.url }}');
+                                     {% else %}
+                                        opacity: 0.25;
+                                         background-color: #DDDDDD;"
+                                        src="{% static 'img/question-circle-regular.svg' %}
+                                     {% endif %}">
                             {% endwith %}
                             <div class="card-body">
                                 <h5 class="card-title">{{ album.name }}</h5>

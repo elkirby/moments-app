@@ -1,8 +1,12 @@
+import shutil
+
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from albums.models import Album
+from albums.models import Album, Photo
+from moments.settings import MEDIA_ROOT
 
 
 class UserDetailTestCase(TestCase):
@@ -28,12 +32,22 @@ class UserDetailTestCase(TestCase):
         cls.public_page = cls.get_album_page_url(cls.public_album)
         cls.public_page_link = cls.create_attribute_reference_tag(cls.public_page)
 
+        # Add photo to public album
+        cls.image = SimpleUploadedFile(name='test_image.jpg', content=open('profiles/data/tuckie.jpg', 'rb').read(),
+                                       content_type='image/jpeg')
+        cls.photo = Photo.objects.create(title="Tuckie", album=cls.public_album, image=cls.image)
+        cls.photo_link = f"background-image: url('{cls.photo.image.url}')"
+
         cls.private_album = Album.objects.create(name="private_album", owner=cls.user, public=False)
         cls.private_page = cls.get_album_page_url(cls.private_album)
         cls.private_page_link = cls.create_attribute_reference_tag(cls.private_page)
 
         cls.new_album_form = reverse('Create New Album')
         cls.new_album_link = cls.create_attribute_reference_tag(cls.new_album_form)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(f"{MEDIA_ROOT}/{cls.user.username}")
 
     def tearDown(self) -> None:
         self.client.logout()
@@ -55,11 +69,22 @@ class UserDetailTestCase(TestCase):
         Tests that when a user visits their own user profile:
             - All albums shown
             - Link to create a new album
+            - Photo preview for album with photo
+            - Default SVG for album without photo
+            - "Create New Album" SVG
         """
         self.client.force_login(self.user)
+
+        default_svg = "/static/img/question-circle-regular.svg"
+        create_album_svg_img = '<img class="card-img-top" src="/static/img/plus-solid.svg">'
         with self.assertTemplateUsed(self.user_template):
             response = self.client.get(self.user_page)
-            for page_link in [self.public_page_link, self.private_page_link, self.new_album_link]:
+            for page_link in [self.public_page_link,
+                              self.private_page_link,
+                              self.new_album_link,
+                              self.photo_link,
+                              default_svg,
+                              create_album_svg_img]:
                 self.assertContains(response, page_link)
 
     def test_get_other_profile_logged_in(self):
