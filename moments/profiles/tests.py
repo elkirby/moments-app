@@ -32,31 +32,41 @@ class UserDetailTestCase(TestCase):
         cls.private_page = cls.get_album_page_url(cls.private_album)
         cls.private_page_link = cls.create_attribute_reference_tag(cls.private_page)
 
+        cls.new_album_form = reverse('Create New Album')
+        cls.new_album_link = cls.create_attribute_reference_tag(cls.new_album_form)
+
     def tearDown(self) -> None:
         self.client.logout()
 
     def test_get_profile_anonymous(self):
         """
-        Tests that only public albums are shown when an anonymous user visits a user profile
+        Tests that when an anonymous user visits a user profile:
+            - Only public albums shown
+            - No link to create a new album
         """
         with self.assertTemplateUsed(self.user_template):
             response = self.client.get(self.user_page)
             self.assertContains(response, self.public_page_link)
             self.assertNotContains(response, self.private_page_link)
+            self.assertNotContains(response, self.new_album_link)
 
     def test_get_own_profile(self):
         """
-        Tests that all albums are shown when a user visits their own user profile
+        Tests that when a user visits their own user profile:
+            - All albums shown
+            - Link to create a new album
         """
         self.client.force_login(self.user)
         with self.assertTemplateUsed(self.user_template):
             response = self.client.get(self.user_page)
-            for page_link in [self.public_page_link, self.private_page_link]:
+            for page_link in [self.public_page_link, self.private_page_link, self.new_album_link]:
                 self.assertContains(response, page_link)
 
     def test_get_other_profile_logged_in(self):
         """
-        Tests that only public albums are shown when a user visits another user's profile
+        Tests that when a user visits another user's profile:
+            - Only public albums shown
+            - No link to create a new album
         """
         other_user = User.objects.create(username="other_user")
         self.client.force_login(other_user)
@@ -64,6 +74,7 @@ class UserDetailTestCase(TestCase):
             response = self.client.get(self.user_page)
             self.assertContains(response, self.public_page_link)
             self.assertNotContains(response, self.private_page_link)
+            self.assertNotContains(response, self.new_album_link)
 
 
 class GetAlbumTestCase(TestCase):

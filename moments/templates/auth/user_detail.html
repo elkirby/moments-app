@@ -21,6 +21,18 @@
                 </a>
             {% endif %}
         {% endfor %}
+        {% if object.username == user.username %}
+        <a href="{% url 'Create New Album' %}">
+            <div class="card" id="new-album" >
+                <div class="overlay">
+                    <img class="card-img-top" src="{% static 'img/plus-solid.svg' %}">
+                    <div class="card-body">
+                        <h5 class="card-title">Create New Album</h5>
+                    </div>
+                </div>
+            </div>
+        </a>
+    {% endif %}
     </div>
 
     <style>
@@ -34,6 +46,15 @@
 
         .overlay {
             transition: .5s ease;
+        }
+
+        .card#new-album .overlay {
+            opacity: 0.75;
+
+        }
+
+        .card#new-album:hover .overlay {
+            opacity: 1;
         }
 
         .card:hover .overlay {
