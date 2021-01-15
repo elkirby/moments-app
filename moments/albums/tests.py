@@ -106,54 +106,11 @@ class CreateAlbumViewTestCase(TestCase):
 
         response = self.client.post(self.create_album_page, data=request_data)
 
-        expected_response_url = f"/albums/{self.album_name}"
+        expected_response_url = f"/{self.user.username}/albums/{self.album_name}"
         self.assertEqual(expected_response_url, response['Location'])
 
         test_album = Album.objects.get(name=self.album_name)
         self.assertIsNotNone(test_album)
-
-
-class AlbumDetailTestCase(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.client = Client()
-        cls.user = User.objects.create_user("test_user")
-        cls.album_name = "test_album"
-        cls.album_page = reverse('View Album', args=[cls.album_name])
-        cls.album_template = "albums/album_detail.html"
-
-    def tearDown(self) -> None:
-        self.client.logout()
-
-    def test_get_album(self):
-        Album.objects.create(owner=self.user, name=self.album_name)
-        with self.assertTemplateUsed(self.album_template):
-            self.client.get(self.album_page)
-
-    def test_get_album_does_not_exist(self):
-        with self.assertTemplateNotUsed(self.album_template):
-            response = self.client.get(self.album_page)
-            self.assertEqual(404, response.status_code)
-
-    def test_get_own_private_album(self):
-        self.client.force_login(self.user)
-        Album.objects.create(owner=self.user, name=self.album_name, public=False)
-        response = self.client.get(self.album_page)
-        self.assertEqual(200, response.status_code)
-
-    def test_get_private_album_anonymous(self):
-        Album.objects.create(owner=self.user, name=self.album_name, public=False)
-        response = self.client.get(self.album_page)
-        self.assertEqual(401, response.status_code)
-
-    def test_get_other_user_private_album(self):
-        other_user = User.objects.create_user(username="other_user")
-        self.client.force_login(other_user)
-        Album.objects.create(owner=self.user, name=self.album_name, public=False)
-        response = self.client.get(self.album_page)
-        self.assertEqual(401, response.status_code)
 
 
 class AlbumListTestCase(TestCase):

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+    {% load static %}
+    <h1 class="display-4">{{ object.username }}</h1>
+    <p class="lead">Albums</p>
+    <div class="card-deck">
+        {% for album in object.album_set.all %}
+            {% if album.public or object.username == user.username %}
+                <a href="{% url 'View Album' slug=object.username name=album.name %}">
+                    <div class="card">
+                        <div class="overlay">
+                            {% with album.photo_set.all|first as photo %}
+                                <img class="card-img-top"
+                                     style="{% if photo %}
+                                        background-image: url('{{ photo.image.url }}');
+                                     {% else %}
+                                        opacity: 0.25;
+                                         background-color: #DDDDDD;"
+                                        src="{% static 'img/question-circle-regular.svg' %}
+                                     {% endif %}">
+                            {% endwith %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ album.name }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+        {% if object.username == user.username %}
+        <a href="{% url 'Create New Album' %}">
+            <div class="card" id="new-album" >
+                <div class="overlay">
+                    <img class="card-img-top" src="{% static 'img/plus-solid.svg' %}">
+                    <div class="card-body">
+                        <h5 class="card-title">Create New Album</h5>
+                    </div>
+                </div>
+            </div>
+        </a>
+    {% endif %}
+    </div>
+
+    <style>
+        img.card-img-top {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 180px;
+            width: 320px;
+        }
+
+        .overlay {
+            transition: .5s ease;
+        }
+
+        .card#new-album .overlay {
+            opacity: 0.75;
+
+        }
+
+        .card#new-album:hover .overlay {
+            opacity: 1;
+        }
+
+        .card:hover .overlay {
+            opacity: 0.75;
+        }
+    </style>
+{% endblock %}
