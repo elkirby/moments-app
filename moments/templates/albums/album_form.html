@@ -3,9 +3,10 @@
 
 {% block content %}
     <div class="d-flex">
-        <form method="post">
+        <form enctype="multipart/form-data" action="{% url 'Create New Album' %}" method="post">
             {% csrf_token %}
             {{ form|crispy }}
+            {{ photos|crispy }}
             <input class="btn-sm btn-info" type="submit" value="Save">
         </form>
     </div>

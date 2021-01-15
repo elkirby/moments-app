@@ -1,3 +1,11 @@
 {% block content %}
-<h1>Hello, {{ user }}</h1>
+        <div class="jumbotron" style="background: none">
+        <div class="container text-center">
+            <h1 class="display-4">Welcome, {{ user }}</h1>
+            <div>
+                <a class="btn btn-info" href="{% url 'Create New Album' %}">Create New Album</a>
+            </div>
+        </div>
+    </div>
+<h1></h1>
 {% endblock %}

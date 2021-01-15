@@ -26,6 +26,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 LOGIN_URL = 'Login'
+MEDIA_URL = '/img/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
 
 # Application definition
 
