@@ -38,7 +38,7 @@
     </a>
     <span class="navbar-text">
         {% if user.is_authenticated %}
-            Hello, {{ user }}
+            Hello, <a href="{% url 'User Profile' user %}"> {{ user }} </a>
         {% else %}
             <form class="form-group" action="{% url 'Login' %}" method="post">
                 <div class="form-inline justify-content-sm-between">

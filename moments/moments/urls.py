@@ -25,7 +25,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='Home'),
     path('', include('auth.urls')),
     path('albums/', include('albums.urls')),
-    path('', include('profiles.urls')),
+    path('<slug>/', include('profiles.urls')),
 ]
 
 if settings.DEBUG:
