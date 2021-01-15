@@ -21,6 +21,11 @@ class CreateAlbum(LoginRequiredMixin, edit.CreateView):
         else:
             data['photos'] = AlbumPhotosFormSet()
 
+        data['breadcrumbs'] = {
+            'Home': reverse('Home'),
+            'Profile Home': None
+        }
+
         return data
 
     def form_valid(self, form):
@@ -42,10 +47,11 @@ class CreateAlbum(LoginRequiredMixin, edit.CreateView):
             if photos.is_valid():
                 photos.instance = self.object
                 photos.save()
-
                 return super().form_valid(form)
+
         if not existing_album:
             Album.objects.get(name=name).delete()
+
         return render(self.request, self.template_name, {'form': form, 'photos': photos})
 
 
@@ -53,3 +59,12 @@ class AlbumPublicListView(ListView):
     queryset = Album.objects.filter(public=True).all()
     ordering = '-created'
     allow_empty = True
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            **super(AlbumPublicListView, self).get_context_data(),
+            'breadcrumbs': {
+                'Home': reverse('Home'),
+                'All Albums': None
+            }
+        }

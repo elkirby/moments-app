@@ -30,6 +30,11 @@
         padding: 0.1em 0.5em;
         font-size: small;
     }
+
+    ol.breadcrumb {
+        background-color: rgba(0, 0, 0, .1);
+        margin: 1em 0;
+    }
 </style>
 <nav class="navbar navbar-light" style="background-color: #7C9A94;">
     <a class="navbar-brand" href="{% url 'Home' %}">
@@ -55,7 +60,25 @@
     </span>
 </nav>
 <div class="container-fluid">
+    {# Breadcrumbs #}
+    {% if breadcrumbs %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {% for breadcrumb_name, breadcrumb_url in breadcrumbs.items %}
+                    {% if forloop.last %}
+                        <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb_name }}</li>
+                    {% else %}
+                        <li class="breadcrumb-item"><a href="{{  breadcrumb_url }}">{{ breadcrumb_name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    {% endif %}
+
+    {# Error Message(s) #}
     <p class="lead">{{ error_msg }}</p>
+
+    {# Page Content #}
     {% block content %} {% endblock %}
 </div>
 </body>

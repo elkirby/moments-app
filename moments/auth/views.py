@@ -21,7 +21,14 @@ def sign_up(request):
                 return HttpResponseRedirect(reverse('Home'))
     else:
         form = forms.UserCreationForm()
-    return render(request, 'auth/sign-up.html', {'signup_form': form})
+    context = {
+        'signup_form': form,
+        'breadcrumbs': {
+            'Home': reverse('Home'),
+            'Sign Up': None
+        }
+    }
+    return render(request, 'auth/sign-up.html', context=context)
 
 
 def user_login(request):
@@ -47,5 +54,8 @@ def user_login(request):
     context = dict(login_form=form)
     if next_page:
         context['next'] = next_page
-
+    context['breadcrumbs'] = {
+        'Home': reverse('Home'),
+        'Login': None
+    }
     return render(request, 'auth/login.html', context=context)
