@@ -28,7 +28,8 @@ class CreateAlbum(LoginRequiredMixin, edit.CreateView):
         context = self.get_context_data()
         photos = context['photos']
 
-        self.success_url = reverse('View Album', args=[form.instance.name])
+        self.success_url = reverse('View Album', args=[form.instance.owner, form.instance.name])
+
         name = form.instance.name
         owner = form.instance.owner
         existing_album = Album.objects.filter(name=name, owner=owner).exists()
@@ -46,15 +47,6 @@ class CreateAlbum(LoginRequiredMixin, edit.CreateView):
         if not existing_album:
             Album.objects.get(name=name).delete()
         return render(self.request, self.template_name, {'form': form, 'photos': photos})
-
-
-def get_album(request, name):
-    album = get_object_or_404(Album, name=name)
-
-    if not album.public and (album.owner != request.user):
-        return render(request, 'base.html', status=401, context={"error_msg": '401: Unauthorized'})
-
-    return render(request, 'albums/album_detail.html', {'album': album})
 
 
 class AlbumPublicListView(ListView):
