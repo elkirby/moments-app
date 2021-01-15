@@ -4,6 +4,7 @@ from django.db.utils import DataError
 from django.test import TestCase, Client
 from django.urls import reverse
 
+from .forms import total_photo_fields
 from .models import Album
 
 
@@ -88,7 +89,20 @@ class CreateAlbumViewTestCase(TestCase):
 
     def test_create_album_post(self):
         self.client.force_login(self.user)
-        request_data = dict(name=self.album_name, public=True)
+        # FIXME: Everything about this is hacky ... even if it gets the job done
+        request_data = {
+            'name': self.album_name,
+            'public': 'on',
+            'photo_set-TOTAL_FORMS': total_photo_fields,
+            'photo_set-INITIAL_FORMS': 0,
+            'photo_set-MIN_NUM_FORMS': 0,
+            'photo_set-MAX_NUM_FORMS': 1000,
+        }
+
+        photo_fields = ('title', 'image', 'id', 'album')
+        for i in range(total_photo_fields):
+            for field in photo_fields:
+                request_data[f"photo_set-{i}-{field}"] = ''
 
         response = self.client.post(self.create_album_page, data=request_data)
 
@@ -178,3 +192,8 @@ class AlbumListTestCase(TestCase):
         self.client.force_login(self.user_0)
         response = self.client.get(self.album_page)
         self.assertQuerysetEqual(values=self.expected_albums, qs=response.context['album_list'])
+
+
+class AlbumFormTestCase(TestCase):
+    # TODO: Need tests for validators
+    pass

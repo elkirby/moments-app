@@ -1,32 +1,60 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from django.views.generic import DetailView, edit, ListView
+from django.views.generic import edit, ListView
 
+from .forms import AlbumForm, AlbumPhotosFormSet
 from .models import Album
 
 
 class CreateAlbum(LoginRequiredMixin, edit.CreateView):
-    model = Album
-    fields = ['name', 'public']
+    form_class = AlbumForm
+    template_name = "albums/album_form.html"
+    context_object_name = "album_form"
+
+    def get_context_data(self, **kwargs):
+
+        data = super(CreateAlbum, self).get_context_data(**kwargs)
+
+        if self.request.POST:
+            data['photos'] = AlbumPhotosFormSet(self.request.POST, self.request.FILES)
+        else:
+            data['photos'] = AlbumPhotosFormSet()
+
+        return data
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
+        context = self.get_context_data()
+        photos = context['photos']
+
         self.success_url = reverse('View Album', args=[form.instance.name])
+        name = form.instance.name
+        owner = form.instance.owner
+        existing_album = Album.objects.filter(name=name, owner=owner).exists()
+        if existing_album:
+            form.add_error('name', f"An album already exists for user '{owner}' with name '{name}'")
 
-        return super().form_valid(form)
+        if not form.errors:
+            self.object = form.save()
+
+            if photos.is_valid():
+                photos.instance = self.object
+                photos.save()
+
+                return super().form_valid(form)
+        if not existing_album:
+            Album.objects.get(name=name).delete()
+        return render(self.request, self.template_name, {'form': form, 'photos': photos})
 
 
-class AlbumDetailView(DetailView):
-    model = Album
-    slug_field = 'name'
+def get_album(request, name):
+    album = get_object_or_404(Album, name=name)
 
-    def get(self, request, *args, **kwargs):
-        album = self.get_object()
-        if not album.public and (album.owner != request.user):
-            return render(request, 'base.html', status=401, context={"error_msg": '401: Unauthorized'})
+    if not album.public and (album.owner != request.user):
+        return render(request, 'base.html', status=401, context={"error_msg": '401: Unauthorized'})
 
-        return super(AlbumDetailView, self).get(self, request, *args, **kwargs)
+    return render(request, 'albums/album_detail.html', {'album': album})
 
 
 class AlbumPublicListView(ListView):

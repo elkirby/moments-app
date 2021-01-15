@@ -2,5 +2,14 @@
 
 {% block content %}
 <h1 class="display-4">{{ album.name }}</h1>
-
+ <div class="card-columns">
+    {% for photo in album.photo_set.all %}
+        <div class="card">
+            <div class="card-body">
+                <img class="card-img-top" src="{{ photo.image.url }}" alt="{{ photo.title }}">
+                <h5 class="card-title">{{ photo.title }}</h5>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
