@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'albums.apps.AlbumsConfig',
     'profiles.apps.ProfilesConfig',
+    'rest_framework'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
