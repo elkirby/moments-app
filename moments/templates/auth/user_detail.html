@@ -4,12 +4,12 @@
     <h1 class="display-4">{{ object.username }}</h1>
     <p class="lead">Albums</p>
     <div class="card-deck">
-        {% for album in object.album_set.all %}
+        {% for album in object.albums.all %}
             {% if album.public or object.username == user.username %}
                 <a href="{% url 'album-detail' slug=object.username name=album.name %}">
                     <div class="card">
                         <div class="overlay">
-                            {% with album.photo_set.all|first as photo %}
+                            {% with album.photos.all|first as photo %}
                                 <img class="card-img-top"
                                      style="{% if photo %}
                                         background-image: url('{{ photo.image.url }}');

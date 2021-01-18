@@ -6,7 +6,7 @@ from django.db import models
 
 class Album(models.Model):
     name = models.CharField(max_length=140)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, related_name='albums', on_delete=models.CASCADE)
     public = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -27,7 +27,7 @@ def upload_to(instance, filename):
 
 class Photo(models.Model):
     title = models.CharField(max_length=140)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE, null=True)
+    album = models.ForeignKey(Album, related_name='photos', on_delete=models.CASCADE, null=True)
     image = models.ImageField(upload_to=upload_to, null=True, blank=True)
 
     class Meta:
