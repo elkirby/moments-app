@@ -65,8 +65,8 @@ class CreateAlbumViewTestCase(TestCase):
         cls.album_name = "test_album"
         cls.album_template = "albums/album_form.html"
 
-        cls.create_album_page = reverse('Create New Album')
-        cls.login_page = reverse('Login')
+        cls.create_album_page = reverse('create-album')
+        cls.login_page = reverse('login')
 
     def tearDown(self) -> None:
         self.client.logout()
@@ -134,7 +134,7 @@ class AlbumListTestCase(TestCase):
         cls.client = Client()
         cls.user_0 = User.objects.create_user("user_0")
         cls.user_1 = User.objects.create_user("user_1")
-        cls.album_page = reverse('Public Albums')
+        cls.album_page = reverse('album-list')
         cls.album_template = "albums/album_list.html"
 
     def setUp(self) -> None:

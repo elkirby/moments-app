@@ -6,7 +6,7 @@
     <div class="card-deck">
         {% for album in object.album_set.all %}
             {% if album.public or object.username == user.username %}
-                <a href="{% url 'View Album' slug=object.username name=album.name %}">
+                <a href="{% url 'album-detail' slug=object.username name=album.name %}">
                     <div class="card">
                         <div class="overlay">
                             {% with album.photo_set.all|first as photo %}
@@ -28,7 +28,7 @@
             {% endif %}
         {% endfor %}
         {% if object.username == user.username %}
-        <a href="{% url 'Create New Album' %}">
+        <a href="{% url 'create-album' %}">
             <div class="card" id="new-album" >
                 <div class="overlay">
                     <img class="card-img-top" src="{% static 'img/plus-solid.svg' %}">

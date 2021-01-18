@@ -13,7 +13,7 @@ class UserDetailTestCase(TestCase):
 
     @staticmethod
     def get_album_page_url(album: Album):
-        return reverse('View Album', args=[album.owner.username, album.name])
+        return reverse('album-detail', args=[album.owner.username, album.name])
 
     @staticmethod
     def create_attribute_reference_tag(url: str):
@@ -25,7 +25,7 @@ class UserDetailTestCase(TestCase):
         cls.client = Client()
 
         cls.user = User.objects.create_user(username="test_user")
-        cls.user_page = reverse('User Profile', args=[cls.user.username])
+        cls.user_page = reverse('user-detail', args=[cls.user.username])
         cls.user_template = 'auth/user_detail.html'
 
         cls.public_album = Album.objects.create(name="public_album", owner=cls.user)
@@ -42,7 +42,7 @@ class UserDetailTestCase(TestCase):
         cls.private_page = cls.get_album_page_url(cls.private_album)
         cls.private_page_link = cls.create_attribute_reference_tag(cls.private_page)
 
-        cls.new_album_form = reverse('Create New Album')
+        cls.new_album_form = reverse('create-album')
         cls.new_album_link = cls.create_attribute_reference_tag(cls.new_album_form)
 
     @classmethod
@@ -71,7 +71,7 @@ class UserDetailTestCase(TestCase):
             - Link to create a new album
             - Photo preview for album with photo
             - Default SVG for album without photo
-            - "Create New Album" SVG
+            - "create-album" SVG
         """
         self.client.force_login(self.user)
 
@@ -110,7 +110,7 @@ class GetAlbumTestCase(TestCase):
         cls.client = Client()
         cls.user = User.objects.create_user("test_user")
         cls.album_name = "test_album"
-        cls.album_page = reverse('View Album', args=[cls.user.username, cls.album_name])
+        cls.album_page = reverse('album-detail', args=[cls.user.username, cls.album_name])
         cls.album_template = "albums/album_detail.html"
 
     def tearDown(self) -> None:

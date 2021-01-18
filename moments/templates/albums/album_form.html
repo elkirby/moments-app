@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="d-flex">
-        <form enctype="multipart/form-data" action="{% url 'Create New Album' %}" method="post">
+        <form enctype="multipart/form-data" action="{% url 'create-album' %}" method="post">
             {% csrf_token %}
             {{ form|crispy }}
             {{ photos|crispy }}

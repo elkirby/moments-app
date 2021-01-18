@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import edit, ListView
 
@@ -33,7 +33,7 @@ class CreateAlbum(LoginRequiredMixin, edit.CreateView):
         context = self.get_context_data()
         photos = context['photos']
 
-        self.success_url = reverse('View Album', args=[form.instance.owner, form.instance.name])
+        self.success_url = reverse('album-detail', args=[form.instance.owner, form.instance.name])
 
         name = form.instance.name
         owner = form.instance.owner

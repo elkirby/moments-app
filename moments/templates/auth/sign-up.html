@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="d-sm-flex">
-        <form action="{% url 'Sign Up' %}" method="post">
+        <form action="{% url 'sign-up' %}" method="post">
             {% csrf_token %}
             {{ signup_form|crispy }}
             <input class="btn btn-info" type="submit" value="Submit">

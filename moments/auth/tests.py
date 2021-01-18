@@ -37,7 +37,7 @@ class UserSignUpTestCase(TestCase):
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
         cls.user_home_template = 'welcome.html'
-        cls.sign_up_page = reverse('Sign Up')
+        cls.sign_up_page = reverse('sign-up')
         cls.sign_up_template = 'auth/sign-up.html'
 
     def tearDown(self) -> None:
@@ -130,7 +130,7 @@ class UserLoginTestCase(TestCase):
         cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.home_page = reverse('Home')
         cls.user_home_template = 'welcome.html'
-        cls.login_page = reverse('Login')
+        cls.login_page = reverse('login')
         cls.login_template = 'auth/login.html'
 
     def tearDown(self) -> None:
