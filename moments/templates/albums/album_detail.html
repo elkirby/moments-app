@@ -3,7 +3,7 @@
 {% block content %}
     <h1 class="display-4">{{ album.name }}</h1>
     <div class="card-columns">
-        {% for photo in album.photo_set.all %}
+        {% for photo in album.photos.all %}
             <div class="card">
                 <img class="card-img-top" src="{{ photo.image.url }}" alt="{{ photo.title }}">
                 <div class="card-body">

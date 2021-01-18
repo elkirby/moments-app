@@ -9,6 +9,7 @@ django-admin = "*"
 psycopg2 = "*"
 django-crispy-forms = "*"
 pillow = "*"
+djangorestframework = "*"
 
 [dev-packages]
 

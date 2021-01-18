@@ -31,7 +31,7 @@ def get_album(request, slug, name):
         'album': album,
         'breadcrumbs': {
             'Home': reverse('Home'),
-            'User Profile': reverse('User Profile', args=[slug]),
+            'User Profile': reverse('user-detail', args=[slug]),
             album.name: None
         }
     }

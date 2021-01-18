@@ -26,6 +26,7 @@ urlpatterns = [
     path('', include('auth.urls')),
     path('albums/', include('albums.urls')),
     path('<slug>/', include('profiles.urls')),
+    path('rest/', include('rest.urls')),
 ]
 
 if settings.DEBUG:

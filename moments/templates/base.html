@@ -43,9 +43,9 @@
     </a>
     <span class="navbar-text">
         {% if user.is_authenticated %}
-            Hello, <a href="{% url 'User Profile' user %}"> {{ user }} </a>
+            Hello, <a href="{% url 'user-detail' user %}"> {{ user }} </a>
         {% else %}
-            <form class="form-group" action="{% url 'Login' %}" method="post">
+            <form class="form-group" action="{% url 'login' %}" method="post">
                 <div class="form-inline justify-content-sm-between">
                     {% csrf_token %}
                     {{ login_nav_form|crispy }}
@@ -53,7 +53,7 @@
                 </div>
 
                 <small class="form-text float-sm-right d-sm-block">
-                        No account?&nbsp;<a href="{% url 'Sign Up' %}"> Sign up now!</a>
+                        No account?&nbsp;<a href="{% url 'sign-up' %}"> Sign up now!</a>
                 </small>
             </form>
         {% endif %}

@@ -65,8 +65,8 @@ class CreateAlbumViewTestCase(TestCase):
         cls.album_name = "test_album"
         cls.album_template = "albums/album_form.html"
 
-        cls.create_album_page = reverse('Create New Album')
-        cls.login_page = reverse('Login')
+        cls.create_album_page = reverse('create-album')
+        cls.login_page = reverse('login')
 
     def tearDown(self) -> None:
         self.client.logout()
@@ -93,16 +93,16 @@ class CreateAlbumViewTestCase(TestCase):
         request_data = {
             'name': self.album_name,
             'public': 'on',
-            'photo_set-TOTAL_FORMS': total_photo_fields,
-            'photo_set-INITIAL_FORMS': 0,
-            'photo_set-MIN_NUM_FORMS': 0,
-            'photo_set-MAX_NUM_FORMS': 1000,
+            'photos-TOTAL_FORMS': total_photo_fields,
+            'photos-INITIAL_FORMS': 0,
+            'photos-MIN_NUM_FORMS': 0,
+            'photos-MAX_NUM_FORMS': 1000,
         }
 
         photo_fields = ('title', 'image', 'id', 'album')
         for i in range(total_photo_fields):
             for field in photo_fields:
-                request_data[f"photo_set-{i}-{field}"] = ''
+                request_data[f"photos-{i}-{field}"] = ''
 
         response = self.client.post(self.create_album_page, data=request_data)
 
@@ -134,7 +134,7 @@ class AlbumListTestCase(TestCase):
         cls.client = Client()
         cls.user_0 = User.objects.create_user("user_0")
         cls.user_1 = User.objects.create_user("user_1")
-        cls.album_page = reverse('Public Albums')
+        cls.album_page = reverse('album-list')
         cls.album_template = "albums/album_list.html"
 
     def setUp(self) -> None:
