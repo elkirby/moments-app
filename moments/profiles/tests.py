@@ -48,6 +48,7 @@ class UserDetailTestCase(TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(f"{MEDIA_ROOT}/{cls.user.username}")
+        super().tearDownClass()
 
     def tearDown(self) -> None:
         self.client.logout()

@@ -7,9 +7,6 @@ from django.urls import reverse
 from albums.models import Album, Photo
 
 
-# FIXME: This test module succeeds on its own, and fails when run as part of the suite.
-# I am baffled as to why.
-
 class RESTUserDetailTestCase(TestCase):
     @staticmethod
     def toisostring(dt: datetime):
